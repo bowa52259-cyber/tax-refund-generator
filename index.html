@@ -6,12 +6,7 @@
     <title>購買節能電器退還減徵貨物稅補件通知信</title>
     <style>
         /* =========================================
-           公務系統風格樣式表 (System Style v3.4)
-           修改歷程：
-           1. 優化錯誤檢核體驗：改為「離開欄位(Blur)」時才觸發警示
-           2. 輸入過程中(Input)不顯示紅字，僅自動帶入正確日期
-           3. 新增複製前的強制防呆檢核 (Validation Check)
-           4. 內文自動帶入申請類別
+           公務系統風格樣式表 (System Style v3.5)
            ========================================= */
         :root {
             --sys-bg: #dff0d8;          
@@ -166,7 +161,6 @@
             background-color: #ffffff !important;
         }
 
-        /* 錯誤狀態樣式 */
         .form-control.is-invalid {
             border: 2px solid var(--sys-error) !important;
             background-color: #ffebee !important;
@@ -324,7 +318,7 @@
             border: none;
             resize: none;
             font-family: "Courier New", Courier, monospace;
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             line-height: 1.6;
             color: #000;
             background: transparent;
@@ -355,7 +349,7 @@
         </div>
         
         <div class="info-bar">
-            系統提示：請確認資料正確後再複製通知內容。
+            系統提示：本版本已強制內建「防詐提醒」與「回覆指引」，請確認資料正確後再複製。
         </div>
 
         <div class="grid-layout">
@@ -405,7 +399,7 @@
                 <div class="card">
                     <div class="card-header">
                         <span class="step-badge">2</span>
-                        缺件項目勾選
+                        補件項目勾選
                     </div>
                     <div class="card-body" id="checklist-container">
                         </div>
@@ -469,16 +463,17 @@
                 id: 'invoice',
                 title: '銷售人開立之統一發票或收據影本',
                 items: [
-                    { id: '2-1', text: '未附統一發票或收據。' },
-                    { id: '2-2', text: '統一發票或收據所載品項與所申請品項不符。' },
-                    { id: '2-3', text: '統一發票未載明購買品項(請提供出貨單或消費明細)。' }
+                    { id: '2-1', text: '未附統一發票或收據(須載明購買產品型號及數量)。' },
+	            { id: '2-2', text: '所附統一發票或收據模糊不清(請提供清晰可辨識之影本開照片)。' },
+                    { id: '2-3', text: '統一發票或收據所載品項與所申請品項不符。' },
+                    { id: '2-4', text: '統一發票未載明購買品項(請提供出貨單或消費明細)。' }
                 ]
             },
             {
                 id: 'warranty',
                 title: '申請電器之保證書或保固卡影本',
                 items: [
-                    { id: '3-1', text: '未附保證書或保固卡。' },
+                    { id: '3-1', text: '未附保證書或保固卡(須載明產品型號及機器號碼)。' },
                     { id: '3-2', text: '所附保證書或保固卡模糊不清(請提供清晰可辨識之影本或照片)。' },
                     { id: '3-3', text: '保固書尚未填載產品型號及機器號碼(請提供機身照片)。' },
                     { id: '3-4', text: '所提供之冷暖氣機保固書為室內機型號及機器號碼(請提供室外機保固書或機身照片)。' }
@@ -488,8 +483,8 @@
                 id: 'passbook',
                 title: '申請人退稅帳戶存摺影本',
                 items: [
-                    { id: '4-1', text: '未附申請人退稅帳戶存摺影本。' },
-                    { id: '4-2', text: '所附退稅帳戶存摺戶名與申請人不同。' },
+                    { id: '4-1', text: '未附申請人退稅帳戶存摺影本(限申請人本人戶名之存摺)。' },
+                    { id: '4-2', text: '所附退稅帳戶存摺戶名與申請人不同(請提供申請人本人戶名之存摺)。' },
                     { id: '4-3', text: '退稅帳戶存摺為優惠存摺(請提供一般活期存款帳戶)。' }
                 ]
             },
@@ -612,61 +607,32 @@
             }
         }
 
-        // ============================================
-        // 統一的表單檢查函式 (防呆機制)
-        // ============================================
         function validateForm() {
             let errors = [];
-            
             const caseNumber = document.getElementById('caseNumber').value.trim();
             const applicantName = document.getElementById('applicantName').value.trim();
             const applicantEmail = document.getElementById('applicantEmail').value.trim();
             const checkedBoxes = document.querySelectorAll('input[type="checkbox"]:checked');
-            
-            // 檢查收件編號
-            if (!caseNumber) {
-                errors.push("● 收件編號：未填寫");
-            } else if (document.getElementById('caseNumber').classList.contains('is-invalid')) {
-                errors.push("● 收件編號：格式錯誤");
-            }
-
-            // 檢查姓名
-            if (!applicantName) {
-                errors.push("● 申請人姓名：未填寫");
-            }
-
-            // 檢查信箱
-            if (!applicantEmail) {
-                errors.push("● 申請人信箱：未填寫");
-            }
-
-            // 檢查勾選項目
-            if (checkedBoxes.length === 0) {
-                errors.push("● 缺件項目：未勾選（請至少勾選一項）");
-            }
-
+            if (!caseNumber) errors.push("● 收件編號：未填寫");
+            else if (document.getElementById('caseNumber').classList.contains('is-invalid')) errors.push("● 收件編號：格式錯誤");
+            if (!applicantName) errors.push("● 申請人姓名：未填寫");
+            if (!applicantEmail) errors.push("● 申請人信箱：未填寫");
+            if (checkedBoxes.length === 0) errors.push("● 缺件項目：未勾選（請至少勾選一項）");
             return errors;
         }
 
         function generateText() {
             const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
             const resultArea = document.getElementById('result-text');
-            
             const caseNumberInput = document.getElementById('caseNumber');
             const caseNumber = caseNumberInput.value.trim();
             const applicantName = document.getElementById('applicantName').value.trim() || '申請人';
             const applicantEmail = document.getElementById('applicantEmail').value.trim();
-            
-            // 新增：取得申請類別資料
             const applicationType = document.getElementById('applicationType').value;
 
-            let year = "○○";
-            let month = "○○";
-            let day = "○○";
-
+            let year = "○○"; let month = "○○"; let day = "○○";
             const cleanCaseNo = caseNumber.replace(/\s+/g, '');
             const len = cleanCaseNo.length;
-            
             const hasError = caseNumberInput.classList.contains('is-invalid');
 
             if (hasError) {
@@ -684,25 +650,17 @@
             }
 
             globalEmail = applicantEmail;
-            
             let subjectLine = `【補件通知】節能電器退還減徵貨物稅申請案`;
-            if (caseNumber) {
-                subjectLine += `（收件編號：${caseNumber}）`;
-            }
+            if (caseNumber) subjectLine += `（收件編號：${caseNumber}）`;
             globalSubject = subjectLine;
 
             let fullText = "";
-            if (applicantEmail) {
-                fullText += `收件信箱：${applicantEmail}\n`;
-            }
+            if (applicantEmail) fullText += `收件信箱：${applicantEmail}\n`;
             fullText += `主旨：${subjectLine}\n\n`;
             
             let bodyContent = "";
             bodyContent += `${applicantName} 先生／小姐 您好：\n`;
-            
-            // 修改：將申請類別插入句子中
-            bodyContent += `您於${year}年${month}月${day}日申請「購買節能電器(${applicationType})退還減徵貨物稅」一案`;
-            
+            bodyContent += `您於${year}年${month}月${day}日依貨物稅條例第11條之1申請「購買節能電器(${applicationType})退還減徵貨物稅」一案`;
             const caseInfo = caseNumber ? `（收件編號：${caseNumber}）` : '';
             bodyContent += `${caseInfo}，經本機關審查，尚有部分申請資料未齊，請依下列事項補正相關文件：\n\n`;
 
@@ -711,43 +669,52 @@
             } else {
                 let currentCategory = "";
                 let categoryCounter = 0;
-                
                 checkboxes.forEach((cb) => {
                     const categoryTitle = cb.dataset.category;
                     const itemId = cb.dataset.itemId;
                     let itemText = cb.dataset.text;
-
                     if (['5-2', '5-3', '5-4'].includes(itemId)) {
                         itemText += '（高風險行業為房屋修繕、住宅營建、室內裝潢、房屋設備安裝、家電批發/零售等11類營業項目）';
                     }
-
                     if (cb.dataset.isOther === 'true') {
                         const categoryId = cb.dataset.categoryId;
                         const customInput = document.getElementById(`other-input-${categoryId}`);
-                        itemText = (customInput && customInput.value.trim() !== '') 
-                                   ? customInput.value.trim() 
-                                   : '（請補正相關文件）';
+                        itemText = (customInput && customInput.value.trim() !== '') ? customInput.value.trim() : '（請補正相關文件）';
                     }
-
                     if (categoryTitle !== currentCategory) {
                         categoryCounter++;
                         const numPrefix = CHINESE_NUMS[categoryCounter - 1] || categoryCounter;
                         bodyContent += `${numPrefix}、${categoryTitle}：\n`;
                         currentCategory = categoryTitle;
                     }
-                    
                     bodyContent += `  ● ${itemText}\n`;
                 });
             }
 
             bodyContent += `\n請於收到本通知後3日內完成補件。\n`;
-            bodyContent += `如以電子郵件方式補件，請直接回覆本信件（Reply），並保留原信件主旨「${subjectLine}」，請勿自行修改。\n`;
-            bodyContent += `未依上述方式回覆，可能影響本機關收件與案件辨識。\n`;
-            bodyContent += `或可將補件資料傳真至${OFFICER_INFO.faxNumber}。\n`;
-            bodyContent += `若有任何疑問，歡迎來電洽詢。\n\n`;
+            bodyContent += `------------------------------------------------------------\n`;
+            
+            // 補件指引
+            bodyContent += `📌【 **重要補件方式指引** 】\n`;
+            bodyContent += `1. 郵件回傳：請您直接點選「回覆」本封郵件，並將補件資料附加於回信中寄回，切勿另行開啟新郵件或將資料寄往其他信箱，以確保您的個人資料安全。\n`;
+            bodyContent += `2. 傳真回傳：或可將補件資料傳真至${OFFICER_INFO.faxNumber}。\n`;
+            bodyContent += `※ 注意事項：回覆時請保留原信件主旨「${subjectLine}」以利核對，請勿自行修改。\n`;
+            
+            // 防詐提醒 (上移至此)
+            bodyContent += `------------------------------------------------------------\n`;
+            bodyContent += `⚠️【 **防詐騙特別提醒** 】\n`;
+            bodyContent += `● 本局補件通知信件一律由官方網域「@ntbk.gov.tw」發出。\n`;
+            bodyContent += `● 本局絕不會要求民眾將個人資料寄送至非官方網域之信箱(如gmail, yahoo等)。\n`;
+            bodyContent += `● 如您收到要求將資料寄往不明信箱，請立即撥打(07)330-2058查證，以維護個人資安。\n`;
+            
+            // 結尾祝禱與單位資訊 (緊接在防詐提醒後)
+            bodyContent += `------------------------------------------------------------\n`;
+            bodyContent += `若有任何疑問，歡迎來電洽詢。\n`;
             bodyContent += `敬祝  順心\n`;
             bodyContent += `財政部高雄國稅局苓雅稽徵所  敬啟\n`;
-            bodyContent += `\n--------------------------------\n`;
+            
+            // 承辦單位詳細資訊
+            bodyContent += `------------------------------------------------------------\n`;
             bodyContent += `承辦單位：${OFFICER_INFO.unitName}\n`;
             bodyContent += `承辦人：${OFFICER_INFO.officerName}\n`;
             bodyContent += `電話：${OFFICER_INFO.officerPhone}\n`;
@@ -759,42 +726,27 @@
         }
 
         function copyToClipboard() {
-            // 防呆檢核
             const errors = validateForm();
             if (errors.length > 0) {
                 alert("⚠️【資料不完整，無法複製】\n\n請補齊下列資訊後再執行複製：\n\n" + errors.join("\n"));
                 return;
             }
-
             const copyText = document.getElementById("result-text");
             copyText.select();
-            copyText.setSelectionRange(0, 99999);
             document.execCommand("copy");
             showToast("已複製全部內容！");
         }
 
         function copySpecific(type) {
-            // 防呆檢核
             const errors = validateForm();
             if (errors.length > 0) {
                 alert("⚠️【資料不完整，無法複製】\n\n請補齊下列資訊後再執行複製：\n\n" + errors.join("\n"));
                 return;
             }
-
-            let textToCopy = "";
-            let msg = "";
-
-            if (type === 'email') {
-                textToCopy = globalEmail;
-                msg = "已複製信箱！";
-                if (!textToCopy) msg = "無信箱資料";
-            } else if (type === 'subject') {
-                textToCopy = globalSubject;
-                msg = "已複製主旨！";
-            } else if (type === 'body') {
-                textToCopy = globalBody;
-                msg = "已複製內文！";
-            }
+            let textToCopy = ""; let msg = "";
+            if (type === 'email') { textToCopy = globalEmail; msg = "已複製信箱！"; }
+            else if (type === 'subject') { textToCopy = globalSubject; msg = "已複製主旨！"; }
+            else if (type === 'body') { textToCopy = globalBody; msg = "已複製內文！"; }
 
             if (textToCopy) {
                 const tempInput = document.createElement("textarea");
@@ -804,8 +756,6 @@
                 document.execCommand("copy");
                 document.body.removeChild(tempInput);
                 showToast(msg);
-            } else {
-                showToast(msg);
             }
         }
 
@@ -813,11 +763,8 @@
             const toast = document.getElementById('toast');
             const toastMsg = document.getElementById('toast-message');
             toastMsg.textContent = message;
-            
             toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2000);
+            setTimeout(() => { toast.classList.remove('show'); }, 2000);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
